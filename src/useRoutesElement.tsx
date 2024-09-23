@@ -8,6 +8,7 @@ import { Route } from './interface/app'
 import NotFoundPage from './pages/not-found'
 import PrivateRoute from './routes/PrivateRoutes'
 import DefaultRoute from './routes/DefaultRoutes'
+import { PATH_URL } from './constants/path'
 
 interface RouteElement {
   routeElement: () => Promise<any>
@@ -43,14 +44,13 @@ export default function useRouteElements() {
       path: '*',
       element: <NotFoundPage />
     },
-
     {
-      path: '/',
+      path: PATH_URL.home,
       element: <DefaultRoute />,
       children: wrapRoutesWithLazy({ routes: DEFAULT_ROUTE })
     },
     {
-      path: '/admin',
+      path: PATH_URL.auth,
       element: <PrivateRoute />,
       children: wrapRoutesWithLazy({ routes: PRIVATE_ROUTE })
     }

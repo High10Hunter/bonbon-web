@@ -1,16 +1,13 @@
-import { AuthResponse } from 'src/types/auth.type'
+import { AuthResponse, SocialLoginType } from 'src/types/auth.type'
 import http from 'src/utils/http'
 
-export const URL_LOGIN = 'login'
+export const URL_LOGIN = '/auth/google-login'
 export const URL_REGISTER = 'register'
 export const URL_LOGOUT = 'logout'
-export const URL_REFRESH_TOKEN = 'refresh-access-token'
+export const URL_REFRESH_TOKEN = '/auth/refresh-token'
 
 const authApi = {
-  registerAccount(body: { email: string; password: string }) {
-    return http.post<AuthResponse>(URL_REGISTER, body)
-  },
-  login(body: { email: string; password: string }) {
+  login(body: SocialLoginType) {
     return http.post<AuthResponse>(URL_LOGIN, body)
   },
   logout() {
