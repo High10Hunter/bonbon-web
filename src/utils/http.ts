@@ -3,7 +3,7 @@ import { clearLS, getAccessTokenFromLS, getRefreshTokenFromLS, setAccessTokenToL
 import config from '../configs'
 import HttpStatusCode from 'src/constants/httpStatusCode.enum'
 import { ErrorResponse } from 'src/types/utils.type'
-import { AuthResponse, RefreshTokenResponse } from 'src/types/auth.type'
+import { RefreshTokenResponse } from 'src/types/auth.type'
 import { URL_LOGIN, URL_LOGOUT, URL_REFRESH_TOKEN, URL_REGISTER } from 'src/apis/auth.api'
 import { isAxiosExpiredTokenError, isAxiosUnauthorizedError } from './utils'
 import { SECONDS_IN_DAY } from 'src/shared/constant'
@@ -43,9 +43,10 @@ export class Http {
       (response) => {
         const { url } = response.config
         if (url === URL_LOGIN || url === URL_REGISTER) {
-          const data = response.data as AuthResponse
-          this.accessToken = data.data.access_token
-          this.refreshToken = data.data.refresh_token
+          const data = response.data
+
+          this.accessToken = data.access_token
+          this.refreshToken = data.refresh_token
           setAccessTokenToLS(this.accessToken)
           setRefreshTokenToLS(this.refreshToken)
         } else if (url === URL_LOGOUT) {
@@ -56,7 +57,7 @@ export class Http {
         return response
       },
       (error: AxiosError) => {
-        // Chỉ toast lỗi không phải 422 và 401
+        // Only toast error not 422 and 401
         if (
           ![HttpStatusCode.UnprocessableEntity, HttpStatusCode.Unauthorized].includes(error.response?.status as number)
         ) {
@@ -66,36 +67,43 @@ export class Http {
           console.log(`Error ${message}`)
         }
 
-        // Lỗi Unauthorized (401) có rất nhiều trường hợp
-        // - Token không đúng
-        // - Không truyền token
-        // - Token hết hạn*
+        /**
+        Unauthorized (401) has many cases
+           - Token is incorrect
+           - Not pass token
+           - Token is expired
+        */
 
-        // Nếu là lỗi 401
+        // If the error code is 401
         if (isAxiosUnauthorizedError<ErrorResponse<{ name: string; message: string }>>(error)) {
           const config = error.response?.config
-          // Trường hợp Token hết hạn và request đó không phải là của request refresh token
-          // thì chúng ta mới tiến hành gọi refresh token
+          /**
+           * Only in case the token is expired and the request is not a refresh token request then we proceed to call the refresh token
+           */
+
           if (isAxiosExpiredTokenError(error) && config?.url !== URL_REFRESH_TOKEN) {
-            // Hạn chế gọi 2 lần handleRefreshToken
+            // Prevent calling handleRefreshToken multiple times
             this.refreshTokenRequest = this.refreshTokenRequest
               ? this.refreshTokenRequest
               : this.handleRefreshToken().finally(() => {
-                  // Giữ refreshTokenRequest trong 10s cho những request tiếp theo nếu có 401 thì dùng
+                  // Hold refreshTokenRequest for 10s to use for the next requests if there is a 401 status code
                   setTimeout(() => {
                     this.refreshTokenRequest = null
                   }, 10000)
                 })
-            return this.refreshTokenRequest.then((access_token) => {
-              // Nghĩa là chúng ta tiếp tục gọi lại request cũ vừa bị lỗi
-              return this.instance({ ...config, headers: { ...config?.headers, authorization: access_token } })
+            return this.refreshTokenRequest.then((accessToken) => {
+              // Replay the old request with the new token
+              return this.instance({ ...config, headers: { ...config?.headers, authorization: accessToken } })
             })
           }
 
-          // Còn những trường hợp như token không đúng
-          // không truyền token,
-          // token hết hạn nhưng gọi refresh token bị fail
-          // thì tiến hành xóa local storage và toast message
+          /**
+           * In the following cases:
+           * - Token is incorrect
+           * - Token is not passed
+           * - Token is expired but the refresh token request is failed
+           * Then we proceed to clear local storage and toast the message
+           */
 
           clearLS()
           this.accessToken = ''
@@ -110,13 +118,13 @@ export class Http {
   private handleRefreshToken() {
     return this.instance
       .post<RefreshTokenResponse>(URL_REFRESH_TOKEN, {
-        refresh_token: this.refreshToken
+        token: this.refreshToken
       })
       .then((res) => {
-        const { access_token } = res.data.data
-        setAccessTokenToLS(access_token)
-        this.accessToken = access_token
-        return access_token
+        const { token } = res.data.data
+        setAccessTokenToLS(token)
+        this.accessToken = token
+        return token
       })
       .catch((error) => {
         clearLS()
@@ -126,5 +134,6 @@ export class Http {
       })
   }
 }
+
 const http = new Http().instance
 export default http
