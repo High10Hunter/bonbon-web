@@ -2,10 +2,17 @@ import { PATH_URL } from 'src/constants/path'
 import { Route } from 'src/interface/app'
 
 // private routes (path, component)
-export const PRIVATE_ROUTE: Route[] = [
+export const AUTH_ROUTES: Route[] = [
   {
-    path: PATH_URL.auth,
-    element: () => import('src/pages/not-found')
+    path: PATH_URL.login,
+    element: () => import('src/pages/login/Login')
+  }
+]
+
+export const PRIVATE_ROUTES: Route[] = [
+  {
+    path: PATH_URL.home,
+    element: () => import('src/pages/Home')
   },
   {
     path: PATH_URL.personalFinance,
@@ -14,12 +21,16 @@ export const PRIVATE_ROUTE: Route[] = [
   {
     path: PATH_URL.groups,
     element: () => import('src/pages/groups/Groups')
+  },
+  {
+    path: PATH_URL.settings,
+    element: () => import('src/pages/settings/Settings')
   }
 ]
 
 export const DEFAULT_ROUTE: Route[] = [
   {
     path: PATH_URL.home,
-    element: () => import('src/pages/Home')
+    element: () => import('src/pages/not-found')
   }
 ]

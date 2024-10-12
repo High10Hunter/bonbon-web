@@ -1,3 +1,4 @@
+import { User } from './users.type'
 import { SuccessResponse } from './utils.type'
 export interface SelectOption {
   label: string
@@ -9,6 +10,7 @@ export type SocialLoginType = {
 }
 
 export type AuthResponse = SuccessResponse<{
+  user: User
   access_token: string
   refresh_token: string
   // expiresRefreshToken: number

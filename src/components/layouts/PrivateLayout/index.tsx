@@ -1,9 +1,11 @@
 import { Layout, Menu, MenuRef } from 'antd'
-import { useEffect, useRef, useState } from 'react'
+import { FC, PropsWithChildren, useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ReactWithChild } from 'src/interface/app'
 import { SIDEBAR_OPTIONS } from 'src/shared/constant'
 import { useResponsive } from 'src/shared/hook'
+import PrivateLayoutNavbar from './PrivateLayoutNavbar'
+import { Icon } from '@iconify/react'
 
 export default function PrivateLayout({ children }: ReactWithChild) {
   const location = useLocation()
@@ -46,22 +48,21 @@ export default function PrivateLayout({ children }: ReactWithChild) {
             items={SIDEBAR_OPTIONS.map((item) => ({
               ...item,
               label: <Link to={item.path}>{item.label}</Link>,
-              icon: <item.icon />
+              icon: <Icon icon={item.icon} />
             }))}
           />
         </Layout.Sider>
-        <Layout style={{ padding: '0 24px 24px' }}>
-          <Layout.Content
-            style={{
-              padding: 24,
-              margin: 0,
-              minHeight: 280
-            }}
-          >
-            {children}
+        <Layout>
+          <Layout.Content style={{ margin: 0, minHeight: 280 }}>
+            <PrivateLayoutNavbar />
+            <ContentWrapper>{children}</ContentWrapper>
           </Layout.Content>
         </Layout>
       </Layout>
     </Layout>
   )
+}
+
+const ContentWrapper: FC<PropsWithChildren> = ({ children }) => {
+  return <div className='p-4'>{children}</div>
 }

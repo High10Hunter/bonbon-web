@@ -5,6 +5,9 @@ module.exports = {
     extend: {
       maxHeight: {
         30: '120px'
+      },
+      colors: {
+        fin: '#B1EB70'
       }
     }
   },

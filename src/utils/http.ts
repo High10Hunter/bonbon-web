@@ -1,5 +1,13 @@
 import axios, { AxiosError, type AxiosInstance } from 'axios'
-import { clearLS, getAccessTokenFromLS, getRefreshTokenFromLS, setAccessTokenToLS, setRefreshTokenToLS } from './auth'
+import {
+  clearLS,
+  getAccessTokenFromLS,
+  getProfileFromLS,
+  getRefreshTokenFromLS,
+  setAccessTokenToLS,
+  setProfileToLS,
+  setRefreshTokenToLS
+} from './auth'
 import config from '../configs'
 import HttpStatusCode from 'src/constants/httpStatusCode.enum'
 import { ErrorResponse } from 'src/types/utils.type'
@@ -7,15 +15,18 @@ import { RefreshTokenResponse } from 'src/types/auth.type'
 import { URL_LOGIN, URL_LOGOUT, URL_REFRESH_TOKEN, URL_REGISTER } from 'src/apis/auth.api'
 import { isAxiosExpiredTokenError, isAxiosUnauthorizedError } from './utils'
 import { SECONDS_IN_DAY } from 'src/shared/constant'
+import { User } from 'src/types/users.type'
 
 export class Http {
   instance: AxiosInstance
   private accessToken: string
   private refreshToken: string
+  private user: User
   private refreshTokenRequest: Promise<string> | null
   constructor() {
     this.accessToken = getAccessTokenFromLS()
     this.refreshToken = getRefreshTokenFromLS()
+    this.user = getProfileFromLS()
     this.refreshTokenRequest = null
     this.instance = axios.create({
       baseURL: config.baseUrl,
@@ -44,11 +55,19 @@ export class Http {
         const { url } = response.config
         if (url === URL_LOGIN || url === URL_REGISTER) {
           const data = response.data
+          const user = {
+            id: data.id,
+            email: data.email,
+            fullName: data.name,
+            avatar: data.avatar
+          }
 
           this.accessToken = data.access_token
           this.refreshToken = data.refresh_token
+          this.user = user
           setAccessTokenToLS(this.accessToken)
           setRefreshTokenToLS(this.refreshToken)
+          setProfileToLS(this.user)
         } else if (url === URL_LOGOUT) {
           this.accessToken = ''
           this.refreshToken = ''
@@ -58,14 +77,14 @@ export class Http {
       },
       (error: AxiosError) => {
         // Only toast error not 422 and 401
-        if (
-          ![HttpStatusCode.UnprocessableEntity, HttpStatusCode.Unauthorized].includes(error.response?.status as number)
-        ) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const data: any | undefined = error.response?.data
-          const message = data?.message || error.message
-          console.log(`Error ${message}`)
-        }
+        // if (
+        //   ![HttpStatusCode.UnprocessableEntity, HttpStatusCode.Unauthorized].includes(error.response?.status as number)
+        // ) {
+        //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        //   const data: any | undefined = error.response?.data
+        //   const message = data?.message || error.message
+        //   console.log(`Error ${message}`)
+        // }
 
         /**
         Unauthorized (401) has many cases

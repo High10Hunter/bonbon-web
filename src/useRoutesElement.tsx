@@ -1,14 +1,15 @@
 import { RouteObject, useRoutes } from 'react-router-dom'
-import { DEFAULT_ROUTE, PRIVATE_ROUTE } from './shared/path'
+import { AUTH_ROUTES, DEFAULT_ROUTE, PRIVATE_ROUTES } from './shared/path'
 
 // component
 import { Row, Spin } from 'antd'
 import { Suspense, lazy } from 'react'
 import { Route } from './interface/app'
 import NotFoundPage from './pages/not-found'
-import PrivateRoute from './routes/PrivateRoutes'
+import PrivateRoutes from './routes/PrivateRoutes'
 import DefaultRoute from './routes/DefaultRoutes'
 import { PATH_URL } from './constants/path'
+import AuthRoutes from './routes/AuthRoutes'
 
 interface RouteElement {
   routeElement: () => Promise<any>
@@ -46,13 +47,13 @@ export default function useRouteElements() {
     },
     {
       path: PATH_URL.home,
-      element: <DefaultRoute />,
-      children: wrapRoutesWithLazy({ routes: DEFAULT_ROUTE })
+      element: <PrivateRoutes />,
+      children: wrapRoutesWithLazy({ routes: PRIVATE_ROUTES })
     },
     {
       path: PATH_URL.auth,
-      element: <PrivateRoute />,
-      children: wrapRoutesWithLazy({ routes: PRIVATE_ROUTE })
+      element: <AuthRoutes />,
+      children: wrapRoutesWithLazy({ routes: AUTH_ROUTES })
     }
   ]
   return useRoutes(routeElements)

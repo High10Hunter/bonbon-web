@@ -1,30 +1,29 @@
 import { useContext, useEffect } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
-import PrivateLayout from 'src/components/layouts/PrivateLayout'
 import { PATH_URL } from 'src/constants/path'
 import { AppContext, AppContextType } from 'src/contexts/app.context'
+import DefaultLayout from 'src/components/layouts/DefaultLayout'
 
-function PrivateRoutes() {
-  console.log('Render PrivateRoutes')
-
+function AuthRoutes() {
+  console.log('Render AuthRoutes')
   const { isAuthenticated } = useContext<AppContextType>(AppContext)
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate(PATH_URL.login)
+    if (isAuthenticated) {
+      navigate(PATH_URL.home)
     }
   }, [isAuthenticated])
 
-  if (!isAuthenticated) {
+  if (isAuthenticated) {
     return null
   }
 
   return (
-    <PrivateLayout>
+    <DefaultLayout>
       <Outlet />
-    </PrivateLayout>
+    </DefaultLayout>
   )
 }
 
-export default PrivateRoutes
+export default AuthRoutes
