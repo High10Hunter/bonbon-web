@@ -7,7 +7,16 @@ module.exports = {
         30: '120px'
       },
       colors: {
-        fin: '#B1EB70'
+        fin: '#55C590'
+      },
+      width: {
+        128: '32rem',
+        144: '36rem',
+        160: '40rem',
+        176: '44rem'
+      },
+      fontFamily: {
+        display: ['Montserrat', 'serif']
       }
     }
   },

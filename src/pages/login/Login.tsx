@@ -1,10 +1,12 @@
-import { Link } from 'react-router-dom'
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google'
 import { useContext, useEffect, useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 import authApi from 'src/apis/auth.api'
 import { toast } from 'react-toastify'
 import { AppContext, AppContextType } from 'src/contexts/app.context'
+import { LoginImg } from 'src/assets/images'
+import HStack from 'src/components/atomic/HStack'
+import { setProfileToLS } from 'src/utils/auth'
 
 export default function Home() {
   const [idToken, setIdToken] = useState<string>('')
@@ -28,7 +30,11 @@ export default function Home() {
 
       setIsAuthenticated(true)
       setUser(user)
-      toast.success('Login successfully!')
+      setProfileToLS(user)
+      toast.success('Login successfully!', {
+        position: 'top-right',
+        autoClose: 500
+      })
     },
     onError: (error: any) => {
       console.log('Login with google error:', error)
@@ -42,24 +48,35 @@ export default function Home() {
   }, [idToken])
 
   return (
-    <div className='relative flex min-h-screen w-full flex-col items-center justify-center bg-zinc-800'>
-      <img src='/vite.svg' alt='Bonbon logo' className='mb-4 h-24' />
-      <h1 className='font-sans text-white'>BonBon Application 🤑</h1>
-      <p className='mt-4 font-sans text-white'>An application that helps you to manage your money</p>
-      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-        <div className='mt-4'>
-          <GoogleLogin
-            onSuccess={(authResponse) => {
-              setIdToken(authResponse.credential as string)
-              console.log('authResponse', authResponse)
-            }}
-          />
+    <HStack className='h-screen w-screen'>
+      <div className='hidden flex-1 p-8 lg:block'>
+        <div className='relative h-full w-full overflow-hidden rounded-xl'>
+          <div className='absolute h-full w-full bg-black bg-opacity-5'></div>
+          <div className='absolute bottom-0 left-0 w-3/4 p-5 font-display text-4xl font-bold leading-[130%] text-white'>
+            BonBon Application, help you to manage your money 🤑
+          </div>
+          <img className='h-full w-full object-cover' src={LoginImg} alt='' />
         </div>
-      </GoogleOAuthProvider>
-
-      <Link to='#' target='_blank' className='mt-4 font-sans text-sky-400 underline'>
-        Download mobile app now
-      </Link>
-    </div>
+      </div>
+      <div className='flex w-full flex-col items-center justify-center p-8 lg:w-128'>
+        <div className='text-center'>
+          <h2 className='text-4xl font-bold text-fin'>Welcome to BonBon</h2>
+          <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+            <div className='mt-4'>
+              <GoogleLogin
+                onSuccess={(authResponse) => {
+                  setIdToken(authResponse.credential as string)
+                  console.log('authResponse', authResponse)
+                }}
+                text='continue_with'
+                size='medium'
+                theme='filled_blue'
+                width={350}
+              />
+            </div>
+          </GoogleOAuthProvider>
+        </div>
+      </div>
+    </HStack>
   )
 }

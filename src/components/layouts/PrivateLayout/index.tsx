@@ -1,4 +1,4 @@
-import { Layout, Menu, MenuRef } from 'antd'
+import { Image, Layout, Menu, MenuRef } from 'antd'
 import { FC, PropsWithChildren, useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ReactWithChild } from 'src/interface/app'
@@ -6,6 +6,7 @@ import { SIDEBAR_OPTIONS } from 'src/shared/constant'
 import { useResponsive } from 'src/shared/hook'
 import PrivateLayoutNavbar from './PrivateLayoutNavbar'
 import { Icon } from '@iconify/react'
+import Logo from 'public/logo.png'
 
 export default function PrivateLayout({ children }: ReactWithChild) {
   const location = useLocation()
@@ -38,6 +39,7 @@ export default function PrivateLayout({ children }: ReactWithChild) {
     <Layout className='min-h-screen'>
       <Layout>
         <Layout.Sider width={200} collapsed={isCollapsed} collapsedWidth={60}>
+          <Image src={Logo} preview={false} />
           <Menu
             className='pt-12'
             ref={inputRef}

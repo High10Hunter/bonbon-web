@@ -16,7 +16,7 @@ const PrivateLayoutNavbar = () => {
       <div className='flex w-full justify-between bg-fin px-8 py-6'>
         <div></div>
         <UserAvatar
-          fullName={user?.fullName || 'Guest'}
+          fullName={user?.fullName || user?.email || 'Guest'}
           avatar={user?.avatar || 'https://placehold.co/400x400?text=Guest'}
         />
       </div>
