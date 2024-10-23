@@ -1,12 +1,11 @@
-import { Image, Layout, Menu, MenuRef } from 'antd'
+import { Layout, MenuRef } from 'antd'
 import { FC, PropsWithChildren, useEffect, useRef, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { ReactWithChild } from 'src/interface/app'
 import { SIDEBAR_OPTIONS } from 'src/shared/constant'
 import { useResponsive } from 'src/shared/hook'
 import PrivateLayoutNavbar from './PrivateLayoutNavbar'
-import { Icon } from '@iconify/react'
-import Logo from 'public/logo.png'
+import PrivateLayoutSidebar from './PrivateLayoutSidebar'
 
 export default function PrivateLayout({ children }: ReactWithChild) {
   const location = useLocation()
@@ -38,21 +37,8 @@ export default function PrivateLayout({ children }: ReactWithChild) {
   return (
     <Layout className='min-h-screen'>
       <Layout>
-        <Layout.Sider width={200} collapsed={isCollapsed} collapsedWidth={60}>
-          <Image src={Logo} preview={false} />
-          <Menu
-            className='pt-12'
-            ref={inputRef}
-            mode='inline'
-            defaultSelectedKeys={['members']}
-            selectedKeys={[selectedKey]}
-            style={{ height: '100%', borderRight: 0 }}
-            items={SIDEBAR_OPTIONS.map((item) => ({
-              ...item,
-              label: <Link to={item.path}>{item.label}</Link>,
-              icon: <Icon icon={item.icon} />
-            }))}
-          />
+        <Layout.Sider className='flex w-full flex-col' width={200} collapsed={isCollapsed} collapsedWidth={60}>
+          <PrivateLayoutSidebar isCollapsed={isCollapsed} />
         </Layout.Sider>
         <Layout>
           <Layout.Content style={{ margin: 0, minHeight: 280 }}>
