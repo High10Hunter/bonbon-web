@@ -23,5 +23,10 @@ module.exports = {
   plugins: [],
   corePlugins: {
     preflight: false
+  },
+  variants: {
+    extend: {
+      scrollbar: ['hidden'] // Allows us to hide the scrollbar
+    }
   }
 }

@@ -13,9 +13,10 @@ import HttpStatusCode from 'src/constants/httpStatusCode.enum'
 import { ErrorResponse } from 'src/types/utils.type'
 import { RefreshTokenResponse } from 'src/types/auth.type'
 import { URL_LOGIN, URL_LOGOUT, URL_REFRESH_TOKEN, URL_REGISTER } from 'src/apis/auth.api'
-import { isAxiosExpiredTokenError, isAxiosUnauthorizedError } from './utils'
+import { isAxiosBadRequestError, isAxiosExpiredTokenError, isAxiosUnauthorizedError } from './utils'
 import { SECONDS_IN_DAY } from 'src/shared/constant'
 import { User } from 'src/types/users.type'
+import { toast } from 'react-toastify'
 
 export class Http {
   instance: AxiosInstance
@@ -39,6 +40,8 @@ export class Http {
     })
     this.instance.interceptors.request.use(
       (config) => {
+        console.log('config', config)
+
         if (this.accessToken && config.headers) {
           config.headers.authorization = `Bearer ${this.accessToken}`
           return config
@@ -129,6 +132,8 @@ export class Http {
           this.refreshToken = ''
           console.log(`Error ${error.response?.data.data?.message || error.response?.data.message}`)
           // window.location.reload()
+        } else if (isAxiosBadRequestError<ErrorResponse<{ name: string; message: string }>>(error)) {
+          toast.error(error.response?.data.data?.message || error.response?.data.message)
         }
         return Promise.reject(error)
       }

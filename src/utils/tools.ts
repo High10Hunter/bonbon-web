@@ -15,3 +15,19 @@ export const convertDataToSelectOptions = <T extends Nameable>(data: T[], valueP
       value: get(item, valueProp)
     }
   }) || []
+
+export const convertCurrencyToSymbol = (currency: string) => {
+  switch (currency) {
+    case 'USD':
+      return '$'
+    case 'VND':
+      return 'đ'
+    default:
+      return ''
+  }
+}
+
+export const formatNumberWithLocale = (number: number) => {
+  const userLocale = navigator.language || 'en-US' // Fallback to 'en-US' if locale is unavailable
+  return new Intl.NumberFormat(userLocale).format(number)
+}
