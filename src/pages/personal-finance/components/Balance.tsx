@@ -1,10 +1,11 @@
+import { DollarSignImg } from 'src/assets/images'
 import { formatNumberWithLocale } from 'src/utils/tools'
 
 export default function Balance({ balance }: { balance: number }) {
   return (
     <div className='group relative flex w-6/12 items-center justify-center rounded-2xl text-center'>
       <div className='relative'>
-        <img src='/src/assets/svgs/dollar.png' alt='Balance' className='h-36 opacity-50' />
+        <img src={DollarSignImg} alt='Balance' className='h-36 opacity-50' />
         <span className='absolute inset-0 flex items-center justify-center text-lg font-semibold text-black'>
           {formatNumberWithLocale(balance)}đ
         </span>
