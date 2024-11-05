@@ -48,7 +48,7 @@ const UserAvatar: FC<UserAvatarProps> = ({ fullName, avatar }) => {
   }
 
   return (
-    <div className='group relative'>
+    <div className='group relative z-50'>
       <div className='flex items-center justify-center gap-3'>
         <p className='avatar-greet'>
           <span className='text-xs'>Hello, </span>

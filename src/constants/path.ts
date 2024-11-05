@@ -4,5 +4,6 @@ export const PATH_URL = {
   login: '/auth/login',
   personalFinance: '/personal-finance',
   groups: '/groups',
-  settings: '/settings'
+  settings: '/settings',
+  spending: '/spending'
 }

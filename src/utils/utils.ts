@@ -15,6 +15,10 @@ export function isAxiosUnauthorizedError<UnauthorizedError>(error: unknown): err
   return isAxiosError(error) && error.response?.status === HttpStatusCode.Unauthorized
 }
 
+export function isAxiosBadRequestError<BadRequestError>(error: unknown): error is AxiosError<BadRequestError> {
+  return isAxiosError(error) && error.response?.status === HttpStatusCode.BadRequest
+}
+
 export function isAxiosExpiredTokenError<UnauthorizedError>(error: unknown): error is AxiosError<UnauthorizedError> {
   return (
     isAxiosUnauthorizedError<ErrorResponse<{ name: string; message: string }>>(error) &&

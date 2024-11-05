@@ -41,6 +41,7 @@ function FormModal(props: IProps, ref: Ref<IFormModalRef>) {
   const handleOk = () => {
     handleSubmit && handleSubmit()
     setConfirmLoading(true)
+    setOpen(false)
   }
 
   const handleCancelBtn = () => {
@@ -61,31 +62,37 @@ function FormModal(props: IProps, ref: Ref<IFormModalRef>) {
 
   return (
     <Modal
-      style={{ minWidth: 900 }}
       title={title}
       open={open}
       onCancel={() => {
         setOpen(false)
         handleCancel && handleCancel()
       }}
-      confirmLoading={confirmLoading}
       footer={[
         <Button form='form' key='reset' htmlType='reset' onClick={handleCancelBtn}>
           {cancelText}
         </Button>,
-        <Button form='form' key='submit' htmlType='submit' type='primary' loading={confirmLoading}>
+        <Button
+          form='form'
+          key='submit'
+          htmlType='submit'
+          type='primary'
+          loading={confirmLoading}
+          onClick={() => {
+            form?.submit()
+          }}
+        >
           {okText}
         </Button>
       ]}
     >
       <Form
         form={form}
-        name='form'
-        wrapperCol={{ span: 24 }}
         rootClassName='mx-auto'
         style={{ maxWidth: 900 }}
         layout='vertical'
         autoComplete='off'
+        size='middle'
         onFinish={handleOk}
       >
         {children}
