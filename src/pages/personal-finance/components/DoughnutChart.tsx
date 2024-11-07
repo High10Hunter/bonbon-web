@@ -1,5 +1,5 @@
 import { Doughnut } from 'react-chartjs-2'
-import { Chart as ChartJS, ArcElement, Tooltip } from 'chart.js'
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from 'chart.js'
 
 interface Props {
   income: number
@@ -8,7 +8,30 @@ interface Props {
 
 ChartJS.register(ArcElement, Tooltip)
 
+const centerTextPlugin = {
+  id: 'centerText',
+  beforeDraw(chart: { ctx: any; width: any; height: any }) {
+    const { ctx, width, height } = chart
+    ctx.save()
+
+    // Custom title text
+    const titleText = 'Nov, 2024'
+
+    // Font settings
+    ctx.font = 'bold 12px Arial'
+    ctx.fillStyle = 'black'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+
+    // Draw the text in the center
+    ctx.fillText(titleText, width / 2, height / 2)
+
+    ctx.restore()
+  }
+}
+
 export default function DoughnutChart({ income, outcome }: Props) {
+  ChartJS.unregister(Legend)
   const data = {
     labels: ['Income', 'Outcome'],
     datasets: [
@@ -30,8 +53,8 @@ export default function DoughnutChart({ income, outcome }: Props) {
   }
 
   return (
-    <div className='relative flex h-36 w-6/12 items-center justify-center justify-self-center rounded-2xl bg-cover bg-center text-center'>
-      <Doughnut data={data} options={options} />
+    <div className='relative flex h-36 w-6/12 flex-col items-center justify-center justify-self-center rounded-2xl bg-cover bg-center text-center'>
+      <Doughnut data={data} options={options} plugins={[centerTextPlugin]} />
     </div>
   )
 }

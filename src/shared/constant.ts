@@ -53,10 +53,10 @@ export const SIDEBAR_OPTIONS = [
     icon: 'fa:group'
   },
   {
-    key: 'spending',
-    label: 'Spending',
-    path: '/spending',
-    icon: 'fa:money'
+    key: 'statistics',
+    label: 'Statistics',
+    path: '/statistics',
+    icon: 'fa:graph'
   }
 ]
 

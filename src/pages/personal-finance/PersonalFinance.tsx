@@ -17,7 +17,7 @@ export default function PersonalFinance() {
   const [spendingList, setSpendingList] = useState<SpendingDetail[]>([])
   const [income, setIncome] = useState<number>(0)
   const [outcome, setOutcome] = useState<number>(0)
-  const balance = income - outcome
+  const [balance, setBalance] = useState<number>(0)
 
   const handleAddSpending = (spending: SpendingDetail) => {
     setSpendingList([...spendingList, spending])
@@ -103,10 +103,11 @@ export default function PersonalFinance() {
         const data = res.data
         setIncome(data['total_income'])
         setOutcome(data['total_outcome'])
+        setBalance(data['balance'])
       }
       getBalanceOverview()
     },
-    [income, outcome]
+    [income, outcome, balance]
   )
 
   return (
@@ -121,7 +122,7 @@ export default function PersonalFinance() {
             <CategoryList />
           </div>
         </div>
-        <div className='col-span-7 flex h-full w-full flex-col gap-3'>
+        <div className='scrollbar-hide col-span-7 flex h-[33rem] w-full flex-col gap-3 overflow-y-auto'>
           <SpendingList
             spendingList={spendingList}
             onUpdateSpending={handleUpdateSpending}
