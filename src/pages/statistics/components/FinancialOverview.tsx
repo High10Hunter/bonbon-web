@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Bar } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Legend } from 'chart.js'
-import { DatePicker, Form, FormInstance } from 'antd'
+import { DatePicker, Form } from 'antd'
 import dayjs from 'dayjs'
 import statisticsApi from 'src/apis/statistics.api'
+import { useFieldValue } from 'src/shared/hook'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title)
 
@@ -12,28 +13,24 @@ export default function FinancialOverview() {
   const [outcomeData, setOutcomeData] = useState()
   const [form] = Form.useForm()
 
-  const useFieldValue = (fieldName: string, form: FormInstance) => {
-    return Form.useWatch(fieldName, form)
-  }
-
   const year = useFieldValue('year', form)
 
   ChartJS.register(Legend)
 
   const data = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], // Example labels (months)
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     datasets: [
       {
         label: 'Income',
-        data: incomeData, // Income data
-        backgroundColor: 'rgba(75, 192, 192, 0.6)', // Color for income bars
+        data: incomeData,
+        backgroundColor: 'rgba(75, 192, 192, 0.6)',
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1
       },
       {
         label: 'Outcome',
-        data: outcomeData, // Outcome data
-        backgroundColor: 'rgba(255, 99, 132, 0.6)', // Color for outcome bars
+        data: outcomeData,
+        backgroundColor: 'rgba(255, 99, 132, 0.6)',
         borderColor: 'rgba(255, 99, 132, 1)',
         borderWidth: 1
       }

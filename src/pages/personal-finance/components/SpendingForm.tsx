@@ -74,8 +74,9 @@ export default function TransactionForm({ title, modalRef, form, formData, handl
               <Select
                 style={{ width: '100%' }}
                 options={[
-                  { value: 'OUTCOME', label: 'OUTCOME' },
-                  { value: 'INCOME', label: 'INCOME' }
+                  { value: 'DEBIT', label: 'Debit' },
+                  { value: 'CREDIT', label: 'Credit' },
+                  { value: 'INCOME', label: 'Income' }
                 ]}
               />
             </Form.Item>

@@ -1,5 +1,6 @@
 import FinancialOverview from './components/FinancialOverview'
 import CategoryDistribution from './components/CategoryDistribution'
+import ChatbotBubble from './components/ChatbotBubble'
 
 export default function Statistics() {
   return (
@@ -12,6 +13,7 @@ export default function Statistics() {
         <div className='flex h-full w-full flex-col'>
           <CategoryDistribution />
         </div>
+        <ChatbotBubble />
       </div>
     </div>
   )

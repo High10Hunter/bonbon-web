@@ -56,7 +56,7 @@ export const SIDEBAR_OPTIONS = [
     key: 'statistics',
     label: 'Statistics',
     path: '/statistics',
-    icon: 'fa:graph'
+    icon: 'fa:graph-line'
   }
 ]
 

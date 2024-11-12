@@ -5,32 +5,42 @@ import { CategoryDetail } from 'src/types/category.type'
 interface CategoryContextType {
   categoryList: CategoryDetail[]
   setCategoryList: React.Dispatch<React.SetStateAction<CategoryDetail[]>>
+  reloadCategories: () => void
 }
 
 // Create context with default values
-const CategoryContext = createContext<CategoryContextType>({ categoryList: [], setCategoryList: () => [] })
+const CategoryContext = createContext<CategoryContextType | undefined>(undefined)
 
 export const CategoryProvider = ({ children }: { children: ReactNode }) => {
   const [categoryList, setCategoryList] = useState<CategoryDetail[]>([])
+  const [reloadTrigger, setReloadTrigger] = useState(0)
+
+  // Function to trigger re-fetch
+  const reloadCategories = () => {
+    setReloadTrigger((prev) => prev + 1) // Increment to trigger useEffect
+  }
 
   useEffect(() => {
-    console.log('Fetching categories...', categoryList)
     const fetchCategories = async () => {
       try {
         const response = await categoryApi.getAllCategories()
         const data = response.data
         setCategoryList(data['results'] || [])
+        console.log('category', data['result'])
       } catch (error) {
-        console.error('Error fetching categories:', error)
+        console.error('Failed to fetch categories', error)
       }
     }
     fetchCategories()
-  }, [])
+  }, [reloadTrigger])
 
-  return <CategoryContext.Provider value={{ categoryList, setCategoryList }}>{children}</CategoryContext.Provider>
+  return (
+    <CategoryContext.Provider value={{ categoryList, setCategoryList, reloadCategories }}>
+      {children}
+    </CategoryContext.Provider>
+  )
 }
 
-// Custom hook to access the context easily
 export const useCategory = () => {
   const context = useContext(CategoryContext)
   if (!context) {

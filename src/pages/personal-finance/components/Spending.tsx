@@ -10,7 +10,7 @@ import SpendingForm from './SpendingForm'
 
 interface Props {
   spending: SpendingDetail
-  onDeleteSpending: (id: number) => void
+  onDeleteSpending: (spending: SpendingDetail) => void
   onUpdateSpending: (id: number, spending: SpendingDetail) => void
 }
 
@@ -50,7 +50,7 @@ export default function Spending({ spending, onDeleteSpending, onUpdateSpending 
       <span className='col-span-3 truncate text-2xl font-bold'>{spending.name}</span>
       <span className='col-span-2 truncate text-center italic text-gray-500'>{spending.time.toLocaleString()}</span>
       <span className='col-span-2 truncate text-center font-bold'>
-        {spending.type === 'OUTCOME' ? '-' : '+'}
+        {spending.type === 'INCOME' ? '+' : '-'}
         {`${formatNumberWithLocale(spending.amount)}${convertCurrencyToSymbol(spending.currency)}`}
       </span>
       <div
@@ -75,14 +75,17 @@ export default function Spending({ spending, onDeleteSpending, onUpdateSpending 
           >
             <ul>
               <li className='cursor-pointer p-2 hover:bg-gray-200'>
-                <button className='cursor-pointer border-none bg-inherit text-xl' onClick={modalRef.current?.showModal}>
+                <button
+                  className='w-full cursor-pointer border-none bg-inherit text-left text-xl'
+                  onClick={modalRef.current?.showModal}
+                >
                   Edit
                 </button>
               </li>
               <li className='cursor-pointer p-2 hover:bg-gray-200'>
                 <button
-                  className='cursor-pointer border-none bg-inherit text-xl'
-                  onClick={() => onDeleteSpending(spending.id)}
+                  className='w-full cursor-pointer border-none bg-inherit text-left text-xl'
+                  onClick={() => onDeleteSpending(spending)}
                 >
                   Delete
                 </button>
