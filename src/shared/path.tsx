@@ -25,6 +25,10 @@ export const PRIVATE_ROUTES: Route[] = [
   {
     path: PATH_URL.settings,
     element: () => import('src/pages/settings/Settings')
+  },
+  {
+    path: PATH_URL.statistics,
+    element: () => import('src/pages/statistics/Statistics')
   }
 ]
 

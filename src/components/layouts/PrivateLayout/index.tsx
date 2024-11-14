@@ -5,7 +5,6 @@ import { ReactWithChild } from 'src/interface/app'
 import { SIDEBAR_OPTIONS } from 'src/shared/constant'
 import { useResponsive } from 'src/shared/hook'
 import PrivateLayoutNavbar from './PrivateLayoutNavbar'
-import PrivateLayoutSidebar from './PrivateLayoutSidebar'
 import { Icon } from '@iconify/react'
 
 export default function PrivateLayout({ children }: ReactWithChild) {
@@ -38,7 +37,7 @@ export default function PrivateLayout({ children }: ReactWithChild) {
   return (
     <Layout className='min-h-screen'>
       <Layout>
-        <Layout.Sider width={300} collapsed={isCollapsed} collapsedWidth={60}>
+        <Layout.Sider width={260} collapsed={isCollapsed} collapsedWidth={60}>
           <Menu
             className='pt-12'
             ref={inputRef}

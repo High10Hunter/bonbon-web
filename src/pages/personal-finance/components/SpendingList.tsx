@@ -20,7 +20,7 @@ interface Props {
   spendingList: SpendingDetail[]
   onAddSpending: (spending: SpendingDetail) => void
   onUpdateSpending: (spending: SpendingDetail) => void
-  onDeleteSpending: (id: number) => void
+  onDeleteSpending: (spending: SpendingDetail) => void
   onFilterSpending: (filter: FilterType) => void
 }
 
@@ -31,7 +31,7 @@ export default function SpendingList({
   onDeleteSpending,
   onFilterSpending
 }: Props) {
-  const { categoryList } = useCategory()
+  const { categoryList, reloadCategories } = useCategory()
   const modalRef = useRef<IFormModalRef>(null)
   const [addForm] = Form.useForm()
   const [filterForm] = Form.useForm()
@@ -59,18 +59,21 @@ export default function SpendingList({
     const res = await spendingApi.createSpending(spending)
     const data = res.data
     onAddSpending(data)
+    reloadCategories()
     toast.success('Add transaction successfully')
   }
 
-  const handleDeleteSpendingList = async (id: number) => {
-    const res = await spendingApi.deleteSpending(id)
-    onDeleteSpending(res.data['id'])
+  const handleDeleteSpendingList = async (spending: SpendingDetail) => {
+    const res = await spendingApi.deleteSpending(spending.id)
+    onDeleteSpending(spending)
+    reloadCategories()
     toast.success('Delete spending successfully')
   }
 
   const handleUpdateSpending = async (id: number, spending: SpendingDetail) => {
     const res = await spendingApi.updateSpending(id, spending)
     onUpdateSpending(res.data)
+    reloadCategories()
     toast.success('Update spending successfully')
   }
 

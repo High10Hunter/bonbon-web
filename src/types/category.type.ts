@@ -3,4 +3,5 @@ export interface CategoryDetail {
   name: string
   percentage: number
   icon: string
+  used_amount?: number
 }

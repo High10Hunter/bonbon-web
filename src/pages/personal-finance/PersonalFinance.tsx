@@ -3,7 +3,7 @@ import Balance from './components/Balance'
 import CategoryList from './components/CategoryList'
 import SpendingList, { FilterType } from './components/SpendingList'
 import { SpendingDetail } from 'src/types/spending.type'
-import { CategoryProvider } from 'src/contexts/category.context'
+import { CategoryProvider, useCategory } from 'src/contexts/category.context'
 import spendingApi from 'src/apis/spending.api'
 import DoughnutChart from './components/DoughnutChart'
 
@@ -17,14 +17,17 @@ export default function PersonalFinance() {
   const [spendingList, setSpendingList] = useState<SpendingDetail[]>([])
   const [income, setIncome] = useState<number>(0)
   const [outcome, setOutcome] = useState<number>(0)
-  const balance = income - outcome
+  const [balance, setBalance] = useState<number>(0)
 
   const handleAddSpending = (spending: SpendingDetail) => {
-    setSpendingList([...spendingList, spending])
+    setSpendingList([spending, ...spendingList])
+
     if (spending.type === 'INCOME') {
-      setIncome(() => income + spending.amount)
-    } else if (spending.type === 'OUTCOME') {
-      setOutcome(() => outcome + spending.amount)
+      setIncome((prevIncome) => prevIncome + spending.amount)
+      setBalance((prevBalance) => Math.round((prevBalance + spending.amount) * 100) / 100) // rounding to 2 decimal places
+    } else {
+      setOutcome((prevOutcome) => prevOutcome + spending.amount)
+      setBalance((prevBalance) => Math.round((prevBalance - spending.amount) * 100) / 100) // rounding to 2 decimal places
     }
   }
 
@@ -43,21 +46,27 @@ export default function PersonalFinance() {
     if (spending.type === 'INCOME') {
       setIncome((income) => {
         const updatedIncome = income + spending.amount - oldAmount
-        console.log('income', income, spending.amount, oldAmount)
         return parseFloat(updatedIncome.toFixed(2)) // Round to 2 decimal places
       })
-    } else if (spending.type === 'OUTCOME') {
+    } else {
       setOutcome((outcome) => {
         const updatedOutcome = outcome + spending.amount - oldAmount
-        console.log('outcome', outcome, spending.amount, oldAmount)
         return parseFloat(updatedOutcome.toFixed(2)) // Round to 2 decimal places
       })
     }
   }
 
-  const handleDeleteSpending = (id: number) => {
-    const newSpendingList = spendingList.filter((item) => item.id !== id)
+  const handleDeleteSpending = (spending: SpendingDetail) => {
+    const newSpendingList = spendingList.filter((item) => item.id !== spending.id)
     setSpendingList(newSpendingList)
+
+    if (spending.type === 'INCOME') {
+      setIncome((prevIncome) => prevIncome - spending.amount)
+      setBalance((prevBalance) => Math.round((prevBalance - spending.amount) * 100) / 100) // rounding to 2 decimal places
+    } else {
+      setOutcome((prevOutcome) => prevOutcome - spending.amount)
+      setBalance((prevBalance) => Math.round((prevBalance + spending.amount) * 100) / 100) // rounding to 2 decimal places
+    }
   }
 
   const handleFilterSpending = async (filter: FilterType) => {
@@ -101,12 +110,14 @@ export default function PersonalFinance() {
       const getBalanceOverview = async () => {
         const res = await spendingApi.balanceOverview()
         const data = res.data
+        console.log(data)
         setIncome(data['total_income'])
         setOutcome(data['total_outcome'])
+        setBalance(data['balance'])
       }
       getBalanceOverview()
     },
-    [income, outcome]
+    [balance, income, outcome]
   )
 
   return (
@@ -118,10 +129,10 @@ export default function PersonalFinance() {
             <DoughnutChart income={income} outcome={outcome} />
           </div>
           <div className='flex h-[22.5rem] w-full flex-col gap-3 overflow-y-auto'>
-            <CategoryList />
+            <CategoryList income={income} />
           </div>
         </div>
-        <div className='col-span-7 flex h-full w-full flex-col gap-3'>
+        <div className='scrollbar-hide col-span-7 flex h-[33rem] w-full flex-col gap-3 overflow-y-auto'>
           <SpendingList
             spendingList={spendingList}
             onUpdateSpending={handleUpdateSpending}

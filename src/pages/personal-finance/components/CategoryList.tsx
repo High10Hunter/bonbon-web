@@ -8,8 +8,8 @@ import categoryApi from 'src/apis/category.api'
 import { toast } from 'react-toastify'
 import { useCategory } from 'src/contexts/category.context'
 
-export default function CategoryList() {
-  const { categoryList, setCategoryList } = useCategory()
+export default function CategoryList({ income }: { income: number }) {
+  const { categoryList, setCategoryList, reloadCategories } = useCategory()
   const modalRef = useRef<IFormModalRef>(null)
   const [addForm] = Form.useForm()
 
@@ -28,6 +28,7 @@ export default function CategoryList() {
     const res = await categoryApi.createCategory(category)
     const data = res.data
     setCategoryList([...categoryList, data])
+    reloadCategories()
     toast.success('Add category successfully')
   }
 
@@ -41,6 +42,7 @@ export default function CategoryList() {
       return item
     })
     setCategoryList(newCategoryList)
+    reloadCategories()
     toast.success('Update category successfully')
   }
 
@@ -64,7 +66,7 @@ export default function CategoryList() {
       </div>
       <div className='scrollbar-hide m-1 flex h-full flex-wrap overflow-y-auto rounded-2xl border-none bg-zinc-300 p-5'>
         {categoryList.map((category) => (
-          <CategoryItem key={category.id} category={category} onUpdateCategory={handleUpdateCategory} />
+          <CategoryItem key={category.id} category={category} onUpdateCategory={handleUpdateCategory} income={income} />
         ))}
       </div>
     </>
