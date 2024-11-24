@@ -25,6 +25,7 @@ export const MemberProvider = ({ id, children }: { id: number; children: ReactNo
       const res = await groupApi.getAllMembersOfGroup(id)
       const data = res.data
       setMembers(data['results'] || [])
+      console.log(data['results'])
     }
     fetchMembers()
   }, [reloadTrigger, id])

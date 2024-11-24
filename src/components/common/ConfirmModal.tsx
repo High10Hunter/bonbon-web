@@ -3,6 +3,7 @@ import { forwardRef, useImperativeHandle, useState } from 'react'
 
 interface Props {
   title?: string
+  description?: string
   onOk?: () => void
   onCancel?: () => void
   onDelete?: () => void
@@ -14,7 +15,7 @@ export interface IConfirmModalRef {
   showModal: () => void
 }
 
-function ConfirmModal({ title, onOk, onCancel }: Props, ref: React.Ref<IConfirmModalRef>) {
+function ConfirmModal({ title, description, onOk, onCancel }: Props, ref: React.Ref<IConfirmModalRef>) {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const showModal = () => {
@@ -50,7 +51,7 @@ function ConfirmModal({ title, onOk, onCancel }: Props, ref: React.Ref<IConfirmM
       okText='Confirm'
       cancelText='Cancel'
     >
-      <p>Are you sure you want to perform this action?</p>
+      <p>{description ? description : 'Are you sure you want to perform this action?'}</p>
     </Modal>
   )
 }
