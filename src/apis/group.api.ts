@@ -18,6 +18,11 @@ export const URL_DELETE_EVENT_ITEM = '/groups/event_item/delete'
 export const URL_CREATE_ITEM_SPENDING = '/group-payment/item-spending/create'
 export const URL_UPDATE_ITEM_SPENDING = '/group-payment/item-spending/update'
 export const URL_ADD_MEMBER = '/groups/user-group/create'
+export const URL_GET_REFUND = '/group-payment/event-refund/list'
+export const URL_CREATE_REFUND = '/group-payment/event-refund/create'
+export const URL_TRANSFER_UPDATE_REFUND = '/group-payment/event-refund/transfer-update'
+export const URL_TRANSFER_CONFIRM_REFUND = '/group-payment/event-refund/transfer-confirm'
+export const URL_RECEIVE_CONFIRM_REFUND = '/group-payment/event-refund/receive-confirm'
 
 const groupApi = {
   getAllGroups() {
@@ -67,6 +72,21 @@ const groupApi = {
   },
   addMemberToGroup(id: number, memberIds: number[]) {
     return http.post(URL_ADD_MEMBER, { group_id: id, member_ids: memberIds })
+  },
+  getRefundList(eventId: number) {
+    return http.get(`${URL_GET_REFUND}/${eventId}`)
+  },
+  createRefundList(eventId: number) {
+    return http.post(`${URL_CREATE_REFUND}`, { event_id: eventId })
+  },
+  updateTransfer(refundId: number) {
+    return http.patch(`${URL_TRANSFER_UPDATE_REFUND}/${refundId}`)
+  },
+  confirmTransfer(eventId: number) {
+    return http.put(`${URL_TRANSFER_CONFIRM_REFUND}/${eventId}`)
+  },
+  confirmReceive(refundId: number) {
+    return http.patch(`${URL_RECEIVE_CONFIRM_REFUND}/${refundId}`)
   }
 }
 

@@ -54,4 +54,23 @@ interface GroupSpending {
   is_main_spender?: boolean
 }
 
-export type { Group, RequestedGroup, UserGroupDetail, EventGroup, EventItem, GroupSpending }
+interface UserRefund {
+  id: number
+  user_id: number
+  full_name: string
+  avatar: string
+  bank_account?: string
+  bank_name?: string
+}
+interface Refund {
+  id: number
+  from_member: UserRefund
+  to_member: UserRefund
+  amount: number
+  currency: Currency
+  is_transferred: boolean
+  is_received: boolean
+  created_at: string
+}
+
+export type { Group, RequestedGroup, UserGroupDetail, EventGroup, EventItem, GroupSpending, Refund }

@@ -2,12 +2,13 @@ import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { EventGroup } from 'src/types/group.type'
 import ConfirmModal, { IConfirmModalRef } from 'src/components/common/ConfirmModal'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import GroupEventForm from '../GroupEventForm'
 import { Form } from 'antd'
 import { IFormModalRef } from 'src/components/common/FormModal'
 import { useFieldValue } from 'src/shared/hook'
 import EventItemList from '../event-item/EventItemList'
+import RefundList from '../../refund/RefundList'
 
 interface Props {
   event?: EventGroup
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export default function GroupEventDetail({ event, handleUpdate, handleDelete, handleBack }: Props) {
+  const [activeTab, setActiveTab] = useState('items')
   const confirmModalRef = useRef<IConfirmModalRef>(null)
   const modalRef = useRef<IFormModalRef>(null)
   const [editForm] = Form.useForm()
@@ -53,17 +55,40 @@ export default function GroupEventDetail({ event, handleUpdate, handleDelete, ha
         </div>
       </div>
       <div className='mt-1 flex items-center justify-around'>
-        <div className='text-center'>
-          <p className='text-green-500'>Items</p>
-          <div className='mx-auto mt-1 h-1 w-32 bg-green-500'></div>
+        {/* Items Tab */}
+        <div
+          className={`cursor-pointer text-center ${activeTab === 'items' ? 'text-green-500' : 'text-gray-500'}`}
+          onClick={() => setActiveTab('items')}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') setActiveTab('items')
+          }}
+          role='tab'
+          tabIndex={0}
+        >
+          <p>Items</p>
+          {activeTab === 'items' && <div className='mx-auto mt-1 h-1 w-32 bg-green-500'></div>}
         </div>
-        <div className='text-center'>
-          <p className='text-gray-500'>Refund</p>
+
+        {/* Refund Tab */}
+        <div
+          className={`cursor-pointer text-center ${activeTab === 'refund' ? 'text-green-500' : 'text-gray-500'}`}
+          onClick={() => setActiveTab('refund')}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') setActiveTab('refund')
+          }}
+          role='tab'
+          tabIndex={0}
+        >
+          <p>Refund</p>
+          {activeTab === 'refund' && <div className='mx-auto mt-1 h-1 w-32 bg-green-500'></div>}
         </div>
       </div>
       <div className='p-3'>
         <div className='scrollbar-hide flex h-[26.5rem] flex-col gap-5 overflow-y-auto bg-white'>
-          <EventItemList eventId={event?.id || 0} canModified={event?.can_modified || false} />
+          {activeTab === 'items' && (
+            <EventItemList eventId={event?.id || 0} canModified={event?.can_modified || false} />
+          )}
+          {activeTab === 'refund' && <RefundList eventId={event?.id || 0} />}
         </div>
       </div>
       <ConfirmModal title='Delete this event' ref={confirmModalRef} onOk={handleDeleteEvent} />

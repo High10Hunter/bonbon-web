@@ -136,8 +136,11 @@ export default function ItemSpending({ itemId, spendings, canModified, handleUpd
             {globalError && <span className='font-bold italic text-red-500'>{globalError}</span>}
             {!isEditing && (
               <button
-                className='flex items-center gap-1 rounded border-none bg-blue-500 px-3 py-1 text-lg text-white shadow hover:cursor-pointer hover:bg-blue-600'
+                className={`flex items-center gap-1 rounded border-none  px-3 py-1 text-lg text-white shadow  ${
+                  canModified ? 'bg-blue-500 hover:cursor-pointer hover:bg-blue-600' : 'bg-gray-500'
+                }`}
                 onClick={handleClickUpdateButton}
+                disabled={!canModified}
               >
                 <FontAwesomeIcon icon={faPenToSquare} />
                 <span>Update</span>
