@@ -23,6 +23,9 @@ export const URL_CREATE_REFUND = '/group-payment/event-refund/create'
 export const URL_TRANSFER_UPDATE_REFUND = '/group-payment/event-refund/transfer-update'
 export const URL_TRANSFER_CONFIRM_REFUND = '/group-payment/event-refund/transfer-confirm'
 export const URL_RECEIVE_CONFIRM_REFUND = '/group-payment/event-refund/receive-confirm'
+export const URL_MEMBERS_TOTAL_SPENDING = '/groups/statistics/members-total-spending'
+export const URL_RECENT_EVENT = '/groups/statistics/recent-event'
+export const URL_TOP_EVENT = '/groups/statistics/top-event'
 
 const groupApi = {
   getAllGroups() {
@@ -87,6 +90,15 @@ const groupApi = {
   },
   confirmReceive(refundId: number) {
     return http.patch(`${URL_RECEIVE_CONFIRM_REFUND}/${refundId}`)
+  },
+  getMembersTotalSpending(groupId: number, startDate: Date, endDate: Date) {
+    return http.get(`${URL_MEMBERS_TOTAL_SPENDING}/${groupId}?start_date=${startDate}&end_date=${endDate}`)
+  },
+  getRecentEvent(groupId: number, year: number) {
+    return http.get(`${URL_RECENT_EVENT}/${groupId}?year=${year}`)
+  },
+  getTopEvent(groupId: number, year: number) {
+    return http.get(`${URL_TOP_EVENT}/${groupId}?year=${year}`)
   }
 }
 

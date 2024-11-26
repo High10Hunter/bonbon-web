@@ -11,11 +11,14 @@ import { Form } from 'antd'
 import { toast } from 'react-toastify'
 import { useFieldValue } from 'src/shared/hook'
 import GroupEventDetail from './GroupEventDetail'
+import GroupStatistics from '../group-statistics/GroupStatistics'
 
 export default function GroupEventList() {
   const { id } = useParams()
   const [events, setEvents] = useState<EventGroup[]>([])
   const [selectedEventId, setSelectedEventId] = useState<number>(0)
+  const [activeTab, setActiveTab] = useState('events')
+
   const modalRef = useRef<IFormModalRef>(null)
   const [addForm] = Form.useForm()
 
@@ -50,7 +53,6 @@ export default function GroupEventList() {
       const res = await groupApi.getAllEventsOfGroup(Number(id))
       const data = res.data
       setEvents(data['results'])
-      console.log(data['results'])
     }
     getEvents()
   }, [id])
@@ -60,37 +62,66 @@ export default function GroupEventList() {
       {!selectedEventId ? (
         <div className='p-3'>
           <div className='mt-1 flex items-center justify-around'>
-            <div className='text-center'>
-              <p className='text-green-500'>Events</p>
-              <div className='mx-auto mt-1 h-1 w-32 bg-green-500'></div>
+            <div
+              className={`cursor-pointer text-center ${activeTab === 'events' ? 'text-green-500' : 'text-gray-500'}`}
+              onClick={() => setActiveTab('events')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') setActiveTab('events')
+              }}
+              role='tab'
+              tabIndex={0}
+            >
+              <p>Events</p>
+              {activeTab === 'events' && <div className='mx-auto mt-1 h-1 w-32 bg-green-500'></div>}
             </div>
-            <div className='text-center'>
-              <p className='text-gray-500'>Statistics</p>
+
+            {/* Refund Tab */}
+            <div
+              className={`cursor-pointer text-center ${
+                activeTab === 'statistics' ? 'text-green-500' : 'text-gray-500'
+              }`}
+              onClick={() => setActiveTab('statistics')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') setActiveTab('statistics')
+              }}
+              role='tab'
+              tabIndex={0}
+            >
+              <p>Statistics</p>
+              {activeTab === 'statistics' && <div className='mx-auto mt-1 h-1 w-32 bg-green-500'></div>}
             </div>
           </div>
 
-          <div className='scrollbar-hide mt-3 flex h-[29rem] flex-col gap-5 overflow-y-auto bg-white p-5'>
-            {events.map((event) => (
-              <GroupEvent key={event.id} event={event} handleClick={() => setSelectedEventId(event.id)} />
-            ))}
-          </div>
-
-          <div className='fixed bottom-10 right-10 z-50 m-3 flex flex-col items-center'>
-            <div className='flex flex-col items-center space-y-2'>
-              <button
-                className='shadow-3xl flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border-none bg-green-500 text-white'
-                onClick={modalRef.current?.showModal}
-              >
-                <FontAwesomeIcon icon={faPlus} size='2x' />
-              </button>
-              <GroupEventForm
-                title='Create new event'
-                modalRef={modalRef}
-                form={addForm}
-                handleSubmit={handleAddEvent}
-              />
+          {activeTab === 'events' && (
+            <>
+              <div className='scrollbar-hide mt-3 flex h-[29rem] flex-col gap-5 overflow-y-auto bg-white p-5'>
+                {events.map((event) => (
+                  <GroupEvent key={event.id} event={event} handleClick={() => setSelectedEventId(event.id)} />
+                ))}
+              </div>
+              <div className='fixed bottom-10 right-10 z-50 m-3 flex flex-col items-center'>
+                <div className='flex flex-col items-center space-y-2'>
+                  <button
+                    className='shadow-3xl flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border-none bg-green-500 text-white'
+                    onClick={modalRef.current?.showModal}
+                  >
+                    <FontAwesomeIcon icon={faPlus} size='2x' />
+                  </button>
+                  <GroupEventForm
+                    title='Create new event'
+                    modalRef={modalRef}
+                    form={addForm}
+                    handleSubmit={handleAddEvent}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+          {activeTab === 'statistics' && (
+            <div className='mt-3 h-[29rem] bg-white p-1'>
+              <GroupStatistics groupId={id} setSelectedEventId={setSelectedEventId} />
             </div>
-          </div>
+          )}
         </div>
       ) : (
         <GroupEventDetail

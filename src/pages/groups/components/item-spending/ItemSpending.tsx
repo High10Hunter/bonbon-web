@@ -25,7 +25,7 @@ interface SpendingError {
 export default function ItemSpending({ itemId, spendings, canModified, handleUpdateItemSpending }: Props) {
   const { members } = useMembers()
   const [isEditing, setIsEditing] = useState(false)
-  const [draftSpendings, setDraftSpendings] = useState([...spendings])
+  const [draftSpendings, setDraftSpendings] = useState(spendings ? [...spendings] : [])
   const [globalError, setGlobalError] = useState<string | null>(null)
   const [isClickOnCreateText, setIsClickOnCreateText] = useState(false)
   const [errors, setErrors] = useState<SpendingError[]>([])
@@ -129,7 +129,7 @@ export default function ItemSpending({ itemId, spendings, canModified, handleUpd
 
   return (
     <div className='-mt-2 rounded-b-lg bg-blue-300 p-4 shadow-md'>
-      {spendings.length > 0 || isClickOnCreateText ? (
+      {spendings?.length > 0 || isClickOnCreateText ? (
         <>
           <div className='mb-3 flex items-center justify-between px-2'>
             <h2 className='text-xl font-bold text-gray-800'>Spending List</h2>

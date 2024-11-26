@@ -55,7 +55,7 @@ export default function EventItem({
         <div>
           <div className='mb-3 flex items-center gap-5'>
             <h2 className='text-2xl font-bold tracking-tight text-gray-800'>{eventItem.name}</h2>
-            {eventItem.spendings.length <= 5 ? (
+            {eventItem.spendings?.length <= 5 ? (
               eventItem.spendings.map((spending) => (
                 <img
                   key={spending.id}
@@ -66,7 +66,7 @@ export default function EventItem({
               ))
             ) : (
               <>
-                {eventItem.spendings.slice(0, 5).map((spending) => (
+                {eventItem.spendings?.slice(0, 5).map((spending) => (
                   <img
                     key={spending.id}
                     src={spending.avatar}
@@ -74,19 +74,13 @@ export default function EventItem({
                     className='h-10 w-10 rounded-full object-cover'
                   />
                 ))}
-                <div className='-ml-3 flex h-10 w-10 items-center justify-center rounded-full bg-gray-400 text-sm text-white'>
-                  +{eventItem.spendings.length - 5}
-                </div>
+                {eventItem.spendings && (
+                  <div className='-ml-3 flex h-10 w-10 items-center justify-center rounded-full bg-gray-400 text-sm text-white'>
+                    +{eventItem.spendings?.length - 5}
+                  </div>
+                )}
               </>
             )}
-            {/* {eventItem.spendings.map((spending) => (
-              <img
-                key={spending.id}
-                src={spending.avatar}
-                alt={`${spending.full_name}'s avatar`}
-                className='h-10 w-10 rounded-full object-cover'
-              />
-            ))} */}
           </div>
           <div className='flex gap-5'>
             <p className='italic text-gray-500'>Created at: {new Date(eventItem.created_at).toLocaleString()}</p>
