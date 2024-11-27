@@ -52,8 +52,7 @@ export default function SidePanel() {
   }
 
   const handleAddMembers = async () => {
-    const res = await groupApi.addMemberToGroup(Number(id), memberIds)
-    const data = res.data
+    await groupApi.addMemberToGroup(Number(id), memberIds)
     toast.success('Add members successfully')
   }
 
@@ -62,11 +61,11 @@ export default function SidePanel() {
   }
 
   useEffect(() => {
+    console.log(group)
     const getMembers = async () => {
       const res = await groupApi.getAllMembersOfGroup(Number(id))
       const data = res.data
       setMembers(data['results'])
-      console.log(data['results'])
     }
     getMembers()
   }, [id])

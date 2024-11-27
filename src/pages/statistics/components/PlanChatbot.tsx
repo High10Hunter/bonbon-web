@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import aiAssistanceApi from 'src/apis/aiAssistance.api'
 import CategoryCard, { CategoryData } from './CategoryCard'
 import { ThreeDot } from 'react-loading-indicators'
+import { BonBonChatbotImg } from 'src/assets/images'
 
 interface Props {
   onClose?: () => void
@@ -160,8 +161,10 @@ export default function PlanChatbot({ onClose }: Props) {
   return (
     <div className='relative flex h-[36rem] w-96 flex-col rounded-t-2xl border border-gray-300 bg-white shadow-2xl'>
       <div className='flex h-14 flex-shrink-0 items-center gap-3 rounded-t-2xl bg-green-400 ps-2'>
-        <div className='h-10 w-10 rounded-full bg-gray-400'></div>
-        <span className='text-xl font-bold'>BonBon Assistant</span>
+        <div className='h-10 w-10 rounded-full bg-white'>
+          <img src={BonBonChatbotImg} alt='Bonni' className='h-full w-full'></img>
+        </div>
+        <span className='text-xl font-bold'>Bonni Assistant</span>
         <button
           className='absolute right-2 border-none bg-green-400 text-2xl text-red-500 hover:cursor-pointer hover:text-gray-800'
           onClick={onClose}

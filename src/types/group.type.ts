@@ -73,4 +73,22 @@ interface Refund {
   created_at: string
 }
 
-export type { Group, RequestedGroup, UserGroupDetail, EventGroup, EventItem, GroupSpending, Refund }
+interface TotalMemberSpending {
+  member_id: number
+  user_id: number
+  avatar: string
+  full_name: string
+  price: number
+  currency: Currency
+}
+
+export type {
+  Group,
+  RequestedGroup,
+  UserGroupDetail,
+  EventGroup,
+  EventItem,
+  GroupSpending,
+  Refund,
+  TotalMemberSpending
+}
