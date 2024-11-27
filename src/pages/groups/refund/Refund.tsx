@@ -92,7 +92,7 @@ export default function RefundDetail({ refund }: Props) {
             className={`flex h-8 w-8 items-center justify-center rounded-full ${
               canClickTransfer ? 'hover:cursor-pointer' : ''
             }
-              ${isTranfered ? 'bg-green-500 text-white' : 'bg-gray-400 text-gray-500'}`}
+              ${isTranfered ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'}`}
             role='button'
             tabIndex={0}
             onClick={() => {
@@ -124,7 +124,7 @@ export default function RefundDetail({ refund }: Props) {
             className={`flex h-8 w-8 items-center justify-center rounded-full ${
               canClickReceive ? 'hover:cursor-pointer' : ''
             }
-              ${isReceived ? 'bg-blue-500 text-white' : 'bg-gray-400 text-gray-500'}`}
+              ${isReceived ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-500'}`}
             role='button'
             tabIndex={0}
             onClick={() => {

@@ -16,7 +16,7 @@ export default function GroupStatistics({ groupId, setSelectedEventId }: Props) 
 
       <div className='col-span-6'>
         <div className='h-full w-full'>
-          <EventStatistics setSelectedEventId={setSelectedEventId} />
+          <EventStatistics groupId={groupId} setSelectedEventId={setSelectedEventId} />
         </div>
       </div>
     </div>

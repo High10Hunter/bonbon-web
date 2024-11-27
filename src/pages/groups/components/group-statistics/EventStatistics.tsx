@@ -17,19 +17,13 @@ interface GroupEvent {
 }
 
 interface Props {
+  groupId?: string
   setSelectedEventId: Dispatch<SetStateAction<number>>
 }
 
-export default function EventStatistics({ setSelectedEventId }: Props) {
+export default function EventStatistics({ groupId, setSelectedEventId }: Props) {
   const [events, setEvents] = useState<GroupEvent[]>([])
   const [form] = Form.useForm()
-
-  const navigate = useNavigate()
-
-  const handleCLickEvent = (groupId: number, eventId: number) => {
-    navigate(PATH_URL.groups + '/' + groupId)
-    setSelectedEventId(eventId)
-  }
 
   const formValue = {
     year: useFieldValue('year', form),
@@ -39,14 +33,14 @@ export default function EventStatistics({ setSelectedEventId }: Props) {
   const handleChangeForm = () => {
     if (formValue.type === 0) {
       const getRecentEvents = async () => {
-        const res = await groupApi.getRecentEvent(0, formValue.year?.year() || dayjs().year())
+        const res = await groupApi.getRecentEvent(Number(groupId), formValue.year?.year() || dayjs().year())
         const data = res.data
         setEvents(data)
       }
       getRecentEvents()
     } else {
       const getTopSpending = async () => {
-        const res = await groupApi.getTopEvent(0, formValue.year?.year() || dayjs().year())
+        const res = await groupApi.getTopEvent(Number(groupId), formValue.year?.year() || dayjs().year())
         const data = res.data
         setEvents(data)
       }
@@ -78,18 +72,18 @@ export default function EventStatistics({ setSelectedEventId }: Props) {
         </Form>
       </div>
 
-      <div className='scrollbar-hide flex h-[25rem] w-full flex-col justify-center overflow-y-auto rounded-lg bg-gray-300 px-5 pb-2 hover:cursor-pointer'>
+      <div className='scrollbar-hide flex h-[25rem] w-full flex-col justify-center overflow-y-auto rounded-lg bg-gray-300 px-5 py-2 hover:cursor-pointer'>
         {events.length > 0 ? (
           events.map((event, index) => (
             <div
               key={event.id}
               className={`mb-4 flex items-center justify-between rounded-lg bg-green-200 p-6 shadow-md transition-shadow duration-200 hover:shadow-lg ${
-                index === 0 ? 'mt-64' : ''
+                index === 0 ? '' : ''
               }`}
-              onClick={() => handleCLickEvent(event.group_id, event.id)}
+              onClick={() => setSelectedEventId(event.id)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
-                  handleCLickEvent(event.group_id, event.id)
+                  setSelectedEventId(event.id)
                 }
               }}
               role='button'

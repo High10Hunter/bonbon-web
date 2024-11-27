@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import PlanChatbot from './PlanChatbot'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faRocketchat } from '@fortawesome/free-brands-svg-icons'
+import { BonBonChatbotImg } from 'src/assets/images'
 
 const ChatbotBubble = () => {
   const [isChatOpen, setIsChatOpen] = useState(false)
@@ -20,10 +21,10 @@ const ChatbotBubble = () => {
             Need help? Chat with us!
           </div> */}
           <button
-            className='flex h-20 w-20 cursor-pointer items-center justify-center rounded-full border-none bg-green-500 text-white shadow-2xl'
+            className='flex h-20 w-20 cursor-pointer items-center justify-center rounded-full border-none bg-white text-white shadow-2xl'
             onClick={toggleChat}
           >
-            <FontAwesomeIcon icon={faRocketchat} size='3x' />
+            <img src={BonBonChatbotImg} alt='Bonni' className='h-20 w-20' />
           </button>
         </div>
       )}
