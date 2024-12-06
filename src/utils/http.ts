@@ -9,7 +9,6 @@ import {
   setRefreshTokenToLS
 } from './auth'
 import config from '../configs'
-import HttpStatusCode from 'src/constants/httpStatusCode.enum'
 import { ErrorResponse } from 'src/types/utils.type'
 import { RefreshTokenResponse } from 'src/types/auth.type'
 import { URL_LOGIN, URL_LOGOUT, URL_REFRESH_TOKEN, URL_REGISTER } from 'src/apis/auth.api'
@@ -31,7 +30,7 @@ export class Http {
     this.refreshTokenRequest = null
     this.instance = axios.create({
       baseURL: config.baseUrl,
-      timeout: 10000,
+      timeout: 40000,
       headers: {
         'Content-Type': 'application/json',
         'expire-access-token': SECONDS_IN_DAY,

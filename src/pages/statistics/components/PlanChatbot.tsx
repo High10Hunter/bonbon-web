@@ -22,27 +22,61 @@ export interface Option {
 
 export interface Question {
   text: string
-  options?: { label: string; nextQuestionIndex: number }[]
+  options?: Option[]
   validator?: (input: string) => boolean
   errorMessage?: string
   key?: string
+  nextQuestionIndex?: number
+  replay?: boolean
+  anotherOptions?: Option[]
 }
 
 const questions: Question[] = [
   {
-    text: `Hello 😊! Would you like me to create a spending plan for you?`,
+    text: `Hello, I am Bonni 😊! How can I help you today?`,
     options: [
-      { label: 'Yes', nextQuestionIndex: 1 },
-      { label: 'No', nextQuestionIndex: -1 }
+      { label: 'Suggest budget decision', nextQuestionIndex: 1 },
+      { label: 'Suggest budget modification', nextQuestionIndex: 2 },
+      { label: 'Ask about finance', nextQuestionIndex: 3 },
+      { label: 'I do not need any help', nextQuestionIndex: -1 }
     ]
   },
   {
     text: 'How many percentages do you want to save next month? 💰',
     validator: (input) => !isNaN(Number(input)) && Number(input) >= 0 && Number(input) <= 100,
     errorMessage: 'Please tell me a number from 0 to 100 😉',
-    key: 'savings'
+    key: 'savings',
+    nextQuestionIndex: -1
+  },
+  {
+    text: 'What type of modifications are you considering?',
+    key: 'message',
+    nextQuestionIndex: -1,
+    replay: true,
+    anotherOptions: [
+      { label: 'Suggest budget decision', nextQuestionIndex: 1 },
+      { label: 'Ask about finance', nextQuestionIndex: 3 }
+    ]
+  },
+  {
+    text: 'What financial information do you want to ask about?',
+    key: 'message',
+    nextQuestionIndex: -1,
+    replay: true,
+    anotherOptions: [
+      { label: 'Suggest budget decision', nextQuestionIndex: 1 },
+      { label: 'Suggest budget modification', nextQuestionIndex: 2 }
+    ]
   }
 ]
+
+const colors = [
+  'bg-gradient-to-r from-purple-400 to-pink-500',
+  'bg-gradient-to-r from-yellow-400 to-orange-500',
+  'bg-gradient-to-r from-blue-400 to-cyan-500',
+  'bg-gradient-to-r from-green-400 to-lime-500'
+]
+const icons = ['💡', '✏️', '🖐️', '👋']
 
 export default function PlanChatbot({ onClose }: Props) {
   const [messages, setMessages] = useState<Message[]>([])
@@ -50,12 +84,14 @@ export default function PlanChatbot({ onClose }: Props) {
   const [displayedText, setDisplayedText] = useState('')
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [showOptions, setShowOptions] = useState(false)
+  const [showAnotherOptions, setShowAnotherOptions] = useState(false)
   const [loading, setLoading] = useState(false)
   const userResponses = useRef<{ [key: string]: string }>({})
+  const userOption = useRef<string>()
 
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  const handleUserResponse = (option?: Option, input?: string) => {
+  const handleUserResponse = async (option?: Option, input?: string) => {
     let nextIndex = currentQuestionIndex
 
     if (option) {
@@ -64,26 +100,34 @@ export default function PlanChatbot({ onClose }: Props) {
       nextIndex = handleUserInput(input)
     }
 
-    setCurrentQuestionIndex(nextIndex)
     setUserInput('')
 
-    if (nextIndex === currentQuestionIndex) {
-      return
-    }
-
-    if (nextIndex === -1) {
-      displayMessageWordByWord('Alright, whenever you need, don’t hesitate to ask me—I’ll be here to help you. 🥰')
-    } else if (nextIndex === questions.length) {
-      displayMessageWordByWord('This is a spending plan for you.')
-      generateSpendingPlan()
-    } else {
+    if (nextIndex != -1) {
       displayMessageWordByWord(questions[nextIndex].text)
+    } else {
+      if (questions[currentQuestionIndex].replay) {
+        nextIndex = currentQuestionIndex
+      }
+      if (userOption.current === 'Suggest budget decision') {
+        displayMessageWordByWord('This is a spending plan for you.')
+        generateSpendingPlan()
+      } else if (userOption.current === 'Suggest budget modification') {
+        await suggestBudgetModification()
+        setShowAnotherOptions(true)
+      } else if (userOption.current === 'Ask about finance') {
+        await answerQuestions()
+        setShowAnotherOptions(true)
+      } else {
+        displayMessageWordByWord('Alright, whenever you need, don’t hesitate to ask me—I’ll be here to help you. 🥰')
+      }
     }
+    setCurrentQuestionIndex(nextIndex)
   }
 
   const handleUserOption = (option: Option) => {
-    setMessages((prevMessages) => [...prevMessages, { text: option.label, sender: 'user', type: 'text' }])
     setShowOptions(false)
+    userOption.current = option.label
+    setMessages((prevMessages) => [...prevMessages, { text: option.label, sender: 'user', type: 'text' }])
 
     return option.nextQuestionIndex
   }
@@ -111,12 +155,12 @@ export default function PlanChatbot({ onClose }: Props) {
       }
     }
 
-    return currentQuestionIndex + 1
+    return currentQuestion.nextQuestionIndex || currentQuestionIndex + 1
   }
 
   const generateSpendingPlan = async () => {
     setLoading(true)
-    const res = await aiAssistanceApi.getSuggestionPlan(Number(userResponses.current.savings))
+    const res = await aiAssistanceApi.suggestBudgetDecision(Number(userResponses.current.savings))
     const data = res.data
     const categoryList = data['response']['savings_plan']['recommendations']
     const categoryMsg: Message[] = []
@@ -129,23 +173,52 @@ export default function PlanChatbot({ onClose }: Props) {
     setLoading(false)
   }
 
-  const displayMessageWordByWord = (fullText: string) => {
-    const words = fullText.split(' ')
-    let index = -1
+  const suggestBudgetModification = async () => {
+    setLoading(true)
+    const res = await aiAssistanceApi.suggestBudgetModification(userResponses.current.message)
+    const data = res.data
+    const categoryMsg: Message[] = []
+    const categoryList = data['response']['detailed_advice']
 
-    const interval = setInterval(() => {
-      if (index < words.length - 1) {
-        index++
-        setDisplayedText((prevText) => prevText + words[index] + ' ')
-      } else {
-        clearInterval(interval)
-        setMessages((prevMessages) => [...prevMessages, { text: fullText, sender: 'bot', type: 'text' }])
-        setDisplayedText('')
+    categoryList.forEach((category: CategoryData) => {
+      categoryMsg.push({ text: category, sender: 'bot', type: 'card' })
+    })
 
-        const currentQuestion = questions[currentQuestionIndex]
-        if (currentQuestion?.options) setShowOptions(true)
-      }
-    }, 20)
+    await displayMessageWordByWord(data['response']['key_advice'])
+    setMessages((prevMessages) => [...prevMessages, ...categoryMsg])
+    setLoading(false)
+  }
+
+  const answerQuestions = async () => {
+    setLoading(true)
+    const res = await aiAssistanceApi.ask(userResponses.current.message)
+    const data = res.data
+
+    await displayMessageWordByWord(data['response']['key_advice'])
+    setLoading(false)
+  }
+
+  const displayMessageWordByWord = (fullText: string): Promise<void> => {
+    return new Promise((resolve) => {
+      const words = fullText.split(' ')
+      let index = -1
+
+      const interval = setInterval(() => {
+        if (index < words.length - 1) {
+          index++
+          setDisplayedText((prevText) => prevText + words[index] + ' ')
+        } else {
+          clearInterval(interval)
+          setMessages((prevMessages) => [...prevMessages, { text: fullText, sender: 'bot', type: 'text' }])
+          setDisplayedText('')
+
+          const currentQuestion = questions[currentQuestionIndex]
+          if (currentQuestion?.options) setShowOptions(true)
+
+          resolve()
+        }
+      }, 20)
+    })
   }
 
   useEffect(() => {
@@ -197,23 +270,47 @@ export default function PlanChatbot({ onClose }: Props) {
             </div>
           )}
           {currentQuestionIndex >= 0 && currentQuestionIndex < questions.length
-            ? showOptions && (
-                <div className='mt-3 flex justify-center gap-4'>
-                  {questions[currentQuestionIndex].options?.map((option, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => handleUserResponse(option)}
-                      className='h-10 w-16 rounded-full border-none bg-green-400 px-4 py-2 text-white hover:cursor-pointer hover:bg-green-500'
-                    >
-                      {option.label}
-                    </button>
-                  ))}
+            ? (showOptions || currentQuestionIndex === 0) && (
+                <div className='mt-3 flex flex-wrap justify-center'>
+                  {questions[currentQuestionIndex].options?.map((option, idx) => {
+                    return (
+                      <div key={idx} className='mb-3 flex w-1/2 justify-center'>
+                        <button
+                          onClick={() => handleUserResponse(option)}
+                          className={`flex h-24 w-11/12 items-center justify-center rounded-lg ${
+                            colors[idx % colors.length]
+                          } gap-2 border-none px-6 py-3 font-semibold text-white  shadow-md transition-transform duration-200 hover:scale-105 hover:cursor-pointer hover:shadow-lg`}
+                        >
+                          <span className='text-2xl'>{icons[idx % icons.length]}</span>
+                          {option.label}
+                        </button>
+                      </div>
+                    )
+                  })}
                 </div>
               )
             : null}
           {loading && (
             <div className='mt-3 text-center'>
               <ThreeDot variant='pulsate' color='#32cd32' size='small' text='' textColor='' />
+            </div>
+          )}
+          {showAnotherOptions && (
+            <div className='mt-3 flex justify-center gap-4'>
+              {questions[currentQuestionIndex].anotherOptions?.map((option, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setShowAnotherOptions(false)
+                    handleUserResponse(option)
+                  }}
+                  className={`rounded-md border-none p-2 font-semibold text-gray-900 ${
+                    colors[idx % colors.length]
+                  } hover:cursor-pointer`}
+                >
+                  {option.label}
+                </button>
+              ))}
             </div>
           )}
           <div ref={bottomRef}></div>
