@@ -13,7 +13,7 @@ const PrivateLayoutNavbar = () => {
 
   return (
     <>
-      <div className='flex w-full justify-between bg-fin px-8 py-5'>
+      <div className='flex w-full justify-between bg-[#48baff] px-8 py-5'>
         <div></div>
         <UserAvatar
           fullName={user?.fullName || user?.email || 'Guest'}
@@ -38,6 +38,8 @@ const UserAvatar: FC<UserAvatarProps> = ({ fullName, avatar }) => {
       handleLogout()
     } else if (title === 'Settings') {
       navigate(PATH_URL.settings)
+    } else if (title === 'Q&A') {
+      navigate(PATH_URL.faq)
     }
   }
 
@@ -51,8 +53,8 @@ const UserAvatar: FC<UserAvatarProps> = ({ fullName, avatar }) => {
     <div className='group relative z-50'>
       <div className='flex items-center justify-center gap-3'>
         <p className='avatar-greet'>
-          <span className='text-md'>Hello, </span>
-          <span className='text-md font-semibold'>{fullName}</span>
+          <span className='text-lg'>Hello, </span>
+          <span className='text-lg font-semibold'>{fullName}</span>
         </p>
         <div className='avatar-wrapper h-12 w-12 overflow-hidden rounded-full'>
           <Image
@@ -69,8 +71,8 @@ const UserAvatar: FC<UserAvatarProps> = ({ fullName, avatar }) => {
       <div className='avatar-menu pointer-events-none absolute right-0 bg-white p-4 opacity-0 shadow-lg group-hover:pointer-events-auto group-hover:opacity-100'>
         <ul>
           {USER_DROPDOWN_OPTIONS.map((option: UserOptions) => (
-            <li key={option.title} className='flex items-center gap-2 p-2 hover:bg-gray-100'>
-              <Button onClick={() => handleUserDropdownClick(option.title)}>
+            <li key={option.title} className='flex gap-2 p-2 hover:bg-gray-100'>
+              <Button onClick={() => handleUserDropdownClick(option.title)} className='w-full text-start'>
                 <Icon icon={option.icon} />
                 {option.title}
               </Button>
